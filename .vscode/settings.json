@@ -1,0 +1,11 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/home/alant/Downloads/json-simple-1.1.1.jar",
+        "/home/alant/Downloads/java-json.jar",
+        "/home/alant/Downloads/ojdbc11.jar",
+        "/home/alant/Downloads/postgresql-42.6.0.jar"
+    ]
+}
