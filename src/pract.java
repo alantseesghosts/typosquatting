@@ -11,6 +11,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class pract {
     
 
@@ -39,7 +43,7 @@ public class pract {
 
         Statement statement = connection.createStatement();
         String query = "DROP TABLE IF EXISTS example_1; " +
-                       "CREATE TABLE example_1(id VARCHAR(40))";
+                       "CREATE TABLE example_1(id VARCHAR(400))";
         //statement.execute(query);
        
         // Prepare a statement with parameterized query
@@ -67,10 +71,51 @@ public class pract {
         connection.close();
     }
 
+    public static void add_description(String id,String value) throws Exception{
+        try {
+        
+        String jsonString = new String(Files.readAllBytes(Paths.get("src/test.json")));
+        
+        JSONArray jsonArray = new JSONArray(jsonString);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    JSONObject docObject = jsonObject.getJSONObject("doc");
+                    String description = docObject.optString("description", "N/A"); // Provide a default value if not found
+                    //System.out.println("Description " + (i + 1) + ": " + description);
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        String jdbcUrl = "jdbc:postgresql://localhost:5432/postgres";
+        String username = "yourname";
+        String password = "yourpassword";
+
+        Class.forName("org.postgresql.Driver");
+        Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+
+        Statement statement = connection.createStatement();
+        
+        // Prepare a statement with parameterized query for both "id" and "description"
+        String insertQuery = "INSERT INTO example_1 (id, description) VALUES (?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+
+        // Insert data into both "id" and "description" columns
+        preparedStatement.setString(1, id);
+        preparedStatement.setString(2, value);
+        preparedStatement.executeUpdate();
+
+        // Close the prepared statement and connection
+        preparedStatement.close();
+
+        statement.close();
+        connection.close();
+    }
+
 
     public static void build_database() throws Exception{
 
-        String jsonString = new String(Files.readAllBytes(Paths.get("src/test.json")));
+        String jsonString = new String(Files.readAllBytes(Paths.get("src/first_block.json")));
         
         JSONArray jsonArray = new JSONArray(jsonString);
 
@@ -97,7 +142,7 @@ public class pract {
     }
 
     public static void build_data() throws Exception{
-        String jsonString = new String(Files.readAllBytes(Paths.get("/home/alant/Desktop/packages.json")));
+        String jsonString = new String(Files.readAllBytes(Paths.get("/home/alant/Desktop/npm_dir/json_3.json")));
         
         JSONArray jsonArray = new JSONArray(jsonString);
 
@@ -111,15 +156,18 @@ public class pract {
         //JSONArray versions = docObject.getJSONArray("versions");
         
         // Get the "description" property from the "doc" JSONObject
-        String description = docObject.getString("description");
+        String description = docObject.optString("description", "N/A");
 
         // Get the "id" property from the current object
         String id = jsonObject.getString("id");
-        add_data(id);
+        //add_data(id);
+        add_description(id,description);
         // Do whatever you want with the description
-        System.out.println("ID " + (i + 1) + ": " + id + " Description " + (i + 1) + ": " + description);
+        //System.out.println("ID " + (i + 1) + ": " + id + " Description " + (i + 1) + ": " + description);
         }
     }
+
+
     public static void clear_data() throws Exception{
         String jdbcUrl = "jdbc:postgresql://localhost:5432/postgres";
         String username = "yourname";
@@ -160,8 +208,11 @@ public class pract {
 
     
     public static void main(String[] args) throws Exception {
-         clear_data();
-         build_database();
+         //clear_data();
+
+         //add_data("12");
+         //build_data();
          //show_data();
+         System.out.println("done");
     }
 }
